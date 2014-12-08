@@ -1,0 +1,28 @@
+* jaword
+
+日本語の単語をきちんと扱うための minor-mode
+
+minor-mode for handling Japanese words better
+
+** screencast
+
+[[screencast.gif]]
+
+** installation
+
+tinysegmenter.el とこのファイルを load-path の通ったディレクトリに置
+いて、ロードする。
+
+: (require 'jaword)
+
+"jaword-mode" で jaword-mode の有効を切り替える。すべてのバッファで
+有効にするには "global-jaword-mode" を用いる。
+
+** note
+
+jaword-mode は subword-mode と同時に有効にすることができないが、
+jaword-mode はそもそもデフォルトで "hogeFugaPiyo" のような単語を３つの
+独立した単語として扱う。 "jaword-enable-subword" を nil に設定すること
+でこれを無効にすることもできる。
+
+: (setq jaword-enable-subword nil)
