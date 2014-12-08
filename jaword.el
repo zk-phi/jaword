@@ -19,6 +19,7 @@
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
 ;; Version: 1.0.0beta
+;; Package-Requires: ((tinysegmenter "0.1"))
 
 ;;; Commentary:
 
@@ -125,20 +126,32 @@ accuracy, but slower speed."
             (forward-word 1)))))))
 
 ;;;###autoload
-(defun jaword-mark (&optional n allow-extend)
+(defun jaword-mark (&optional arg allow-extend)
   "Like mark-word, but handle Japanese words better."
   (interactive "P\np")
-  (unwind-protect                       ; flet
-      (progn
-        (fset 'forward-word (symbol-function 'jaword-forward))
-        (mark-word n allow-extend))
-    (fset 'forward-word (symbol-function 'forward-word))))
+  ;; based on "mark-word" in "simple.el"
+  (cond ((and allow-extend
+              (or (and (eq last-command this-command)
+                       (mark t))
+                  (region-active-p)))
+         (setq arg (cond (arg (prefix-numeric-value arg))
+                         ((< (mark) (point)) -1)
+                         (t 1)))
+         (set-mark (save-excursion
+                     (goto-char (mark))
+                     (jaword-forward arg)
+                     (point))))
+        (t
+         (push-mark (save-excursion
+                      (jaword-forward (prefix-numeric-value arg))
+                      (point))
+                    nil t))))
 
 ;;;###autoload
 (defun jaword-kill (n)
   "Like kill-word, but handle Japanese words better."
   (interactive "p")
-  (kill-region (point) (jaword-forward n)))
+  (kill-region (point) (progn (jaword-forward n) (point))))
 
 ;;;###autoload
 (defun jaword-backward-kill (n)
