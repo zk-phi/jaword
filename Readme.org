@@ -10,8 +10,8 @@ minor-mode for handling Japanese words better
 
 ** installation
 
-tinysegmenter.el とこのファイルを load-path の通ったディレクトリに置
-いて、ロードする。
+tinysegmenter.el ([[https://github.com/myuhe/tinysegmenter.el/]]) と
+jaword.el を load-path の通ったディレクトリに置いて、ロードする。
 
 : (require 'jaword)
 
