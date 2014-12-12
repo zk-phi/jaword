@@ -183,6 +183,28 @@ accuracy, but slower speed."
 (define-globalized-minor-mode global-jaword-mode jaword-mode
   (lambda () (jaword-mode 1)))
 
+;;;###autoload
+(defadvice isearch-yank-word-or-char
+    (around jaword activate)
+  "Add support for jaword."
+  (if jaword-mode
+      (isearch-yank-internal
+       (lambda ()
+         (if (or (= (char-syntax (or (char-after) 0)) ?w)
+                 (= (char-syntax (or (char-after (1+ (point))) 0)) ?w))
+             (jaword-forward 1)
+           (forward-char 1))
+         (point)))
+    ad-do-it))
+
+;;;###autoload
+(defadvice isearch-yank-word
+    (around jaword activate)
+  "Add support for jaword."
+  (if jaword-mode
+      (isearch-yank-internal (lambda () (jaword-word arg) (point)))
+    ad-do-it))
+
 (provide 'jaword)
 
 ;;; jaword.el ends here
