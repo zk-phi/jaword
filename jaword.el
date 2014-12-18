@@ -126,6 +126,9 @@ accuracy, but slower speed."
             (forward-word 1)))))))
 
 ;;;###autoload
+(put 'jaword 'forward-op 'jaword-forward)
+
+;;;###autoload
 (defun jaword-mark (&optional arg allow-extend)
   "Like mark-word, but handle Japanese words better."
   (interactive "P\np")
