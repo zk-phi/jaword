@@ -50,6 +50,8 @@
 
 (defconst jaword-version "1.0.0beta")
 
+;; + customs
+
 (defgroup jaword nil
   "Minor-mode for handling Japanese words better."
   :group 'emacs)
@@ -62,6 +64,8 @@ accuracy, but slower speed."
 (defcustom jaword-enable-subword t
   "when non-nil, handle subwords like \"hogeFugaPiyo\"."
   :group 'jaword)
+
+;; + internal functions
 
 (defun jaword--segment-around-point ()
   (let* ((back (replace-regexp-in-string
@@ -95,6 +99,8 @@ accuracy, but slower speed."
                    (and (< (1+ n) (length segments)) (aref segments (1+ n)))
                  (substring segment pos (length segment)))))))
 
+;; + interactive commands
+
 ;;;###autoload
 (defun jaword-backward (arg)
   "Like backward-word, but handles Japanese words better."
@@ -125,7 +131,6 @@ accuracy, but slower speed."
               (subword-forward 1)
             (forward-word 1)))))))
 
-;;;###autoload
 (put 'jaword 'forward-op 'jaword-forward)
 
 ;;;###autoload
@@ -168,6 +173,8 @@ accuracy, but slower speed."
   (interactive "*p")
   (transpose-subr 'jaword-forward n))
 
+;; + minor modes
+
 (defvar jaword-mode-map
   (let ((kmap (make-sparse-keymap)))
     (define-key kmap [remap backward-word] 'jaword-backward)
@@ -177,14 +184,18 @@ accuracy, but slower speed."
     (define-key kmap [remap transpose-words] 'jaword-transpose)
     kmap))
 
+;;;###autoload
 (define-minor-mode jaword-mode
   "Toggle Japanese word movement and editing."
   :init-value nil
   :global nil
   :keymap jaword-mode-map)
 
+;;;###autoload
 (define-globalized-minor-mode global-jaword-mode jaword-mode
   (lambda () (jaword-mode 1)))
+
+;; + isearch support
 
 ;;;###autoload
 (defadvice isearch-yank-word-or-char
@@ -207,6 +218,8 @@ accuracy, but slower speed."
   (if jaword-mode
       (isearch-yank-internal (lambda () (jaword-word arg) (point)))
     ad-do-it))
+
+;; + provide
 
 (provide 'jaword)
 
