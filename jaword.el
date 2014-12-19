@@ -198,8 +198,7 @@ accuracy, but slower speed."
 ;; + isearch support
 
 ;;;###autoload
-(defadvice isearch-yank-word-or-char
-    (around jaword activate)
+(defadvice isearch-yank-word-or-char (around jaword activate)
   "Add support for jaword."
   (if jaword-mode
       (isearch-yank-internal
@@ -212,11 +211,10 @@ accuracy, but slower speed."
     ad-do-it))
 
 ;;;###autoload
-(defadvice isearch-yank-word
-    (around jaword activate)
+(defadvice isearch-yank-word (around jaword activate)
   "Add support for jaword."
   (if jaword-mode
-      (isearch-yank-internal (lambda () (jaword-word arg) (point)))
+      (isearch-yank-internal (lambda () (jaword-forward 1) (point)))
     ad-do-it))
 
 ;; + provide
