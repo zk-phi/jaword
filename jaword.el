@@ -131,6 +131,7 @@ accuracy, but slower speed."
               (subword-forward 1)
             (forward-word 1)))))))
 
+;;;###autoload
 (put 'jaword 'forward-op 'jaword-forward)
 
 ;;;###autoload
