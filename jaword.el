@@ -1,6 +1,6 @@
 ;;; jaword.el --- Minor-mode for handling Japanese words better
 
-;; Copyright (C) 2014 zk_phi
+;; Copyright (C) 2014-2015 zk_phi
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ accuracy, but slower speed."
   :group 'jaword)
 
 (defcustom jaword-enable-subword t
-  "when non-nil, handle subwords like \"hogeFugaPiyo\"."
+  "when non-nil, handle subwords like `subword-mode'."
   :group 'jaword)
 
 ;; + internal functions
@@ -109,7 +109,9 @@ accuracy, but slower speed."
       (jaword-forward (- arg))
     (let (segment)
       (dotimes (_ arg)
-        (if (and (looking-back "\\Ca[\s\t\n]*")
+        (if (and (save-excursion
+                   (skip-chars-backward "\s\t\n")
+                   (looking-back "\\Ca"))
                  (setq segment (car (jaword--segment-around-point))))
             (search-backward-regexp (mapconcat 'string segment "[\s\t\n]*"))
           (if jaword-enable-subword
@@ -124,7 +126,9 @@ accuracy, but slower speed."
       (jaword-backward (- arg))
     (let (segment)
       (dotimes (_ arg)
-        (if (and (looking-at "[\s\t\n]*\\Ca")
+        (if (and (save-excursion
+                   (skip-chars-forward "\s\t\n")
+                   (looking-at "\\Ca"))
                  (setq segment (cdr (jaword--segment-around-point))))
             (search-forward-regexp (mapconcat 'string segment "[\s\t\n]*"))
           (if jaword-enable-subword
