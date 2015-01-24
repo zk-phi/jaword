@@ -68,20 +68,19 @@ accuracy, but slower speed."
 ;; + internal functions
 
 (defun jaword--segment-around-point ()
-  (let* ((back (replace-regexp-in-string
+  (let* ((back (replace-regexp-in-string ; substring BEFORE point with spaces removed
                 "[\s\t\n]" ""
                 (buffer-substring-no-properties
                  (max 1 (- (point) (lsh jaword-buffer-size -1)))
                  (point))))
-         (forward (replace-regexp-in-string
+         (forward (replace-regexp-in-string ; substring AFTER point with spaces removed
                    "[\s\t\n]" ""
                    (buffer-substring-no-properties
                     (point)
                     (min (1+ (buffer-size)) (+ (point) (lsh jaword-buffer-size -1))))))
+         (_ (when (> (length forward) 0) ; mark the beginning of "forward"
+              (put-text-property 0 1 'base-pos t forward)))
          (str (concat back forward))
-         (back-len (length back))
-         (_ (when (> (length forward) 0)
-              (put-text-property back-len (1+ back-len) 'base-pos t str)))
          (segments (apply 'vector (tseg-segment str)))
          ;; ----
          (n 0) segment pos)
@@ -113,6 +112,7 @@ accuracy, but slower speed."
                    (skip-chars-backward "\s\t\n")
                    (looking-back "\\Ca"))
                  (setq segment (car (jaword--segment-around-point))))
+            ;; "食べる" -> "食[\s\t\n]べ[\s\t\n]る[\s\t\n]"
             (search-backward-regexp (mapconcat 'string segment "[\s\t\n]*"))
           (if jaword-enable-subword
               (subword-backward 1)
