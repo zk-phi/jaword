@@ -222,6 +222,17 @@ accuracy, but slower speed."
       (isearch-yank-internal (lambda () (jaword-forward 1) (point)))
     ad-do-it))
 
+;; + subword workaround
+
+;; `subword-backward' by default sometimes moves cursor too far. for
+;; example, after "ほげ1", `backward-word' moves cursor between "げ"
+;; and "1", but `subword-backward' moves before "ほ"
+(defadvice subword-backward (around jaword-fix-subword (arg) activate)
+  "Don't move cursor further than `forward-word'."
+  (interactive "^p")
+  (goto-char (max (save-excursion (backward-word arg) (point))
+                  (save-excursion ad-do-it (point)))))
+
 ;; + provide
 
 (provide 'jaword)
