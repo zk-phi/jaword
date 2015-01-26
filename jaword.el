@@ -68,35 +68,28 @@ accuracy, but slower speed."
 ;; + internal functions
 
 (defun jaword--segment-around-point ()
-  (let* ((back (replace-regexp-in-string ; substring BEFORE point with spaces removed
-                "[\s\t\n]" ""
-                (buffer-substring-no-properties
-                 (max 1 (- (point) (lsh jaword-buffer-size -1)))
-                 (point))))
-         (forward (replace-regexp-in-string ; substring AFTER point with spaces removed
-                   "[\s\t\n]" ""
-                   (buffer-substring-no-properties
-                    (point)
-                    (min (1+ (buffer-size)) (+ (point) (lsh jaword-buffer-size -1))))))
+  (let* ((back (buffer-substring-no-properties
+                (max 1 (- (point) (lsh jaword-buffer-size -1)))
+                (point)))
+         (forward (buffer-substring-no-properties
+                   (point)
+                   (min (1+ (buffer-size)) (+ (point) (lsh jaword-buffer-size -1)))))
          (_ (when (> (length forward) 0) ; mark the beginning of "forward"
               (put-text-property 0 1 'base-pos t forward)))
          (str (concat back forward))
-         (segments (apply 'vector (tseg-segment str)))
-         ;; ----
-         (n 0) segment pos)
-    (while (and (< n (length segments))
-                (progn
-                  (setq segment (aref segments n))
-                  (setq pos (text-property-any 0 (length segment) 'base-pos t segment))
-                  (not pos)))
-      (cl-incf n))
+         (segments (tseg-segment str))
+         last current pos)
+    (while (and segments (null pos))
+      (setq last     current
+            current  (car segments)
+            pos      (text-property-any 0 (length current) 'base-pos t current)
+            segments (cdr segments)))
     (cons (if (and pos (zerop pos))
-              (and (> n 0) (aref segments (1- n)))
-            (substring segment 0 pos))
-          (and (< n (length segments))
-               (if (= pos (length segment))
-                   (and (< (1+ n) (length segments)) (aref segments (1+ n)))
-                 (substring segment pos (length segment)))))))
+              last
+            (substring current 0 pos))
+          (if (= pos (length current))
+              (car segments)
+            (substring current pos (length current))))))
 
 ;; + interactive commands
 
@@ -108,15 +101,16 @@ accuracy, but slower speed."
       (jaword-forward (- arg))
     (let (segment)
       (dotimes (_ arg)
-        (if (and (save-excursion
-                   (skip-chars-backward "\s\t\n")
-                   (looking-back "\\Ca"))
-                 (setq segment (car (jaword--segment-around-point))))
-            ;; "食べる" -> "食[\s\t\n]べ[\s\t\n]る[\s\t\n]"
-            (search-backward-regexp (mapconcat 'string segment "[\s\t\n]*"))
-          (if jaword-enable-subword
-              (subword-backward 1)
-            (backward-word 1)))))))
+        (cond ((and (progn
+                      (skip-chars-backward "\s\t\n")
+                      (looking-back "\\Ca"))
+                    (setq segment (car (jaword--segment-around-point))))
+               (search-backward
+                (replace-regexp-in-string "^[\s\t\n]*" "" segment)))
+              (jaword-enable-subword
+               (subword-backward 1))
+              (t
+               (backward-word 1)))))))
 
 ;;;###autoload
 (defun jaword-forward (arg)
@@ -126,14 +120,16 @@ accuracy, but slower speed."
       (jaword-backward (- arg))
     (let (segment)
       (dotimes (_ arg)
-        (if (and (save-excursion
-                   (skip-chars-forward "\s\t\n")
-                   (looking-at "\\Ca"))
-                 (setq segment (cdr (jaword--segment-around-point))))
-            (search-forward-regexp (mapconcat 'string segment "[\s\t\n]*"))
-          (if jaword-enable-subword
-              (subword-forward 1)
-            (forward-word 1)))))))
+        (cond ((and (progn
+                      (skip-chars-forward "\s\t\n")
+                      (looking-at "\\Ca"))
+                    (setq segment (cdr (jaword--segment-around-point))))
+               (search-forward
+                (replace-regexp-in-string "[\s\t\n]*$" "" segment)))
+              (jaword-enable-subword
+               (subword-forward 1))
+              (t
+               (forward-word 1)))))))
 
 ;;;###autoload
 (put 'jaword 'forward-op 'jaword-forward)
@@ -203,7 +199,7 @@ accuracy, but slower speed."
 ;; + isearch support
 
 ;;;###autoload
-(defadvice isearch-yank-word-or-char (around jaword activate)
+(defadvice isearch-yank-word-or-char (around jaword-support-isearch activate)
   "Add support for jaword."
   (if jaword-mode
       (isearch-yank-internal
@@ -216,7 +212,7 @@ accuracy, but slower speed."
     ad-do-it))
 
 ;;;###autoload
-(defadvice isearch-yank-word (around jaword activate)
+(defadvice isearch-yank-word (around jaword-support-isearch activate)
   "Add support for jaword."
   (if jaword-mode
       (isearch-yank-internal (lambda () (jaword-forward 1) (point)))
