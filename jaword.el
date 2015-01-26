@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.0beta
+;; Version: 1.0.0
 ;; Package-Requires: ((tinysegmenter "0.1"))
 
 ;;; Commentary:
@@ -43,12 +43,14 @@
 
 ;;; Change Log:
 
+;; 1.0.0 first released
+
 ;;; Code:
 
 (require 'tinysegmenter)
 (require 'subword)
 
-(defconst jaword-version "1.0.0beta")
+(defconst jaword-version "1.0.0")
 
 ;; + customs
 
