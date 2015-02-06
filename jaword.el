@@ -86,10 +86,10 @@ accuracy, but slower speed."
             current  (car segments)
             pos      (text-property-any 0 (length current) 'base-pos t current)
             segments (cdr segments)))
-    (cons (if (and pos (zerop pos))
+    (cons (if (or (null pos) (zerop pos))
               last
             (substring current 0 pos))
-          (if (= pos (length current))
+          (if (or (null pos) (= pos (length current)))
               (car segments)
             (substring current pos (length current))))))
 
