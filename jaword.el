@@ -71,11 +71,11 @@ accuracy, but slower speed."
 
 (defun jaword--segment-around-point ()
   (let* ((back (buffer-substring-no-properties
-                (max 1 (- (point) (lsh jaword-buffer-size -1)))
+                (max (point-min) (- (point) (lsh jaword-buffer-size -1)))
                 (point)))
          (forward (buffer-substring-no-properties
                    (point)
-                   (min (1+ (buffer-size)) (+ (point) (lsh jaword-buffer-size -1)))))
+                   (min (point-max) (+ (point) (lsh jaword-buffer-size -1)))))
          (_ (when (> (length forward) 0) ; mark the beginning of "forward"
               (put-text-property 0 1 'base-pos t forward)))
          (str (concat back forward))
