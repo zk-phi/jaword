@@ -203,7 +203,7 @@ accuracy, but slower speed."
 ;;;###autoload
 (defadvice isearch-yank-word-or-char (around jaword-support-isearch activate)
   "Add support for jaword."
-  (if jaword-mode
+  (if (bound-and-true-p jaword-mode)
       (isearch-yank-internal
        (lambda ()
          (if (or (= (char-syntax (or (char-after) 0)) ?w)
@@ -216,7 +216,7 @@ accuracy, but slower speed."
 ;;;###autoload
 (defadvice isearch-yank-word (around jaword-support-isearch activate)
   "Add support for jaword."
-  (if jaword-mode
+  (if (bound-and-true-p jaword-mode)
       (isearch-yank-internal (lambda () (jaword-forward 1) (point)))
     ad-do-it))
 
