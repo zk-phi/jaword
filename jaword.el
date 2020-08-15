@@ -107,7 +107,7 @@ accuracy, but slower speed."
       (dotimes (_ arg)
         (cond ((and (progn
                       (skip-chars-backward "\s\t\n")
-                      (looking-back "\\Ca"))
+                      (looking-back "\\Ca" (point-min)))
                     (setq segment (car (jaword--segment-around-point))))
                (search-backward
                 (replace-regexp-in-string "^[\s\t\n]*" "" segment)))
