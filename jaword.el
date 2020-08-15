@@ -19,7 +19,7 @@
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
 ;; Version: 1.0.0
-;; Package-Requires: ((tinysegmenter "0.1"))
+;; Package-Requires: ((tinysegmenter "0.1") (emacs "24.4"))
 
 ;;; Commentary:
 
@@ -203,7 +203,7 @@ accuracy, but slower speed."
 ;; + isearch support
 
 ;;;###autoload
-(defadvice isearch-yank-word-or-char (around jaword-support-isearch activate)
+(define-advice isearch-yank-word-or-char (:around (fn &rest args) jaword-support-isearch)
   "Add support for jaword."
   (if (bound-and-true-p jaword-mode)
       (isearch-yank-internal
@@ -213,25 +213,24 @@ accuracy, but slower speed."
              (jaword-forward 1)
            (forward-char 1))
          (point)))
-    ad-do-it))
+    (apply fn args)))
 
 ;;;###autoload
-(defadvice isearch-yank-word (around jaword-support-isearch activate)
+(define-advice isearch-yank-word (:around (fn &rest args) jaword-support-isearch)
   "Add support for jaword."
   (if (bound-and-true-p jaword-mode)
       (isearch-yank-internal (lambda () (jaword-forward 1) (point)))
-    ad-do-it))
+    (apply fn args)))
 
 ;; + subword workaround
 
 ;; `subword-backward' by default sometimes moves cursor too far. for
 ;; example, after "ほげ1", `backward-word' moves cursor between "げ"
 ;; and "1", but `subword-backward' moves before "ほ"
-(defadvice subword-backward (around jaword-fix-subword (arg) activate)
+(define-advice subword-backward (:around (fn &rest args) jaword-fix-subword)
   "Don't move cursor further than `forward-word'."
-  (interactive "^p")
-  (goto-char (max (save-excursion (backward-word arg) (point))
-                  (save-excursion ad-do-it (point)))))
+  (goto-char (max (save-excursion (backward-word (car args)) (point))
+                  (save-excursion (apply fn args) (point)))))
 
 ;; + provide
 
