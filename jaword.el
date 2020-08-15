@@ -61,11 +61,13 @@
 (defcustom jaword-buffer-size 50
   "size of text passed to the segmenter. set larger for better
 accuracy, but slower speed."
-  :group 'jaword)
+  :group 'jaword
+  :type 'integer)
 
 (defcustom jaword-enable-subword t
   "when non-nil, handle subwords like `subword-mode'."
-  :group 'jaword)
+  :group 'jaword
+  :type 'boolean)
 
 ;; + internal functions
 
