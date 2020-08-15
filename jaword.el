@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Package-Requires: ((tinysegmenter "0.1") (emacs "24.4"))
 
 ;;; Commentary:
@@ -44,6 +44,7 @@
 ;;; Change Log:
 
 ;; 1.0.0 first released
+;; 1.0.1 Migrate to nadvice.el (now requires Emacs 24.4 or later)
 
 ;;; Code:
 
