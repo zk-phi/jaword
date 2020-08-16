@@ -19,7 +19,7 @@
 ;; Author: zk_phi
 ;; URL: http://zk-phi.github.io/
 ;; Version: 1.0.1
-;; Package-Requires: ((tinysegmenter "0.1") (emacs "24.4"))
+;; Package-Requires: ((tinysegmenter "0.1") (emacs "25.1"))
 
 ;;; Commentary:
 
@@ -44,7 +44,7 @@
 ;;; Change Log:
 
 ;; 1.0.0 first released
-;; 1.0.1 Migrate to nadvice.el (now requires Emacs 24.4 or later)
+;; 1.0.1 Migrate to nadvice.el (now requires Emacs 25.1 or later)
 
 ;;; Code:
 
