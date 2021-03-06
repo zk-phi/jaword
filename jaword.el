@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 ;;; jaword.el --- Minor-mode for handling Japanese words better
 
 ;; Copyright (C) 2014-2015 zk_phi
