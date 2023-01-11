@@ -141,6 +141,36 @@ accuracy, but slower speed."
 (put 'jaword 'forward-op 'jaword-forward)
 
 ;;;###autoload
+(defun jaword-backward-to (arg)
+  "Like backward-to-word, but handles Japanese words better."
+  (interactive "p")
+  (if (< arg 0)
+      (jaword-forward-to (- arg))
+    (let ((p (point)))
+      (re-search-backward "\\W*")
+      (if (= p (point))
+          (progn
+            (jaword-backward (1+ arg))
+            (jaword-forward 1))
+        (jaword-backward arg)
+        (jaword-forward 1)))))
+
+;;;###autoload
+(defun jaword-forward-to (arg)
+  "Like forward-to-word, but handle Japanese words better."
+  (interactive "p")
+  (if (< arg 0)
+      (jaword-backward-to (- arg))
+    (let ((p (point)))
+      (re-search-forward "\\W*")
+      (if (= p (point))
+          (progn
+            (jaword-forward (1+ arg))
+            (jaword-backward 1))
+        (jaword-forward arg)
+        (jaword-backward 1)))))
+
+;;;###autoload
 (defun jaword-mark (&optional arg allow-extend)
   "Like mark-word, but handle Japanese words better."
   (interactive "P\np")
