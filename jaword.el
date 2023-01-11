@@ -148,12 +148,15 @@ accuracy, but slower speed."
       (jaword-forward-to (- arg))
     (let ((p (point)))
       (re-search-backward "\\W*")
-      (if (= p (point))
-          (progn
-            (jaword-backward (1+ arg))
-            (jaword-forward 1))
-        (jaword-backward arg)
-        (jaword-forward 1)))))
+      (jaword-backward
+       (+ (1+ arg)
+          (if (= p (point))
+              0
+            ;; If the point was changed, the nearest end of a word is the current point.
+            ;; It means that first movement of point is done.
+            -1)))
+      ;; Go to the beginning of the current word
+      (jaword-forward 1))))
 
 ;;;###autoload
 (defun jaword-forward-to (arg)
@@ -163,12 +166,15 @@ accuracy, but slower speed."
       (jaword-backward-to (- arg))
     (let ((p (point)))
       (re-search-forward "\\W*")
-      (if (= p (point))
-          (progn
-            (jaword-forward (1+ arg))
-            (jaword-backward 1))
-        (jaword-forward arg)
-        (jaword-backward 1)))))
+      (jaword-forward
+       (+ (1+ arg)
+          (if (= p (point))
+              0
+            ;; If the point was changed, the nearest beginning of a word is the current point.
+            ;; It means that first movement of point is done.
+            -1)))
+      ;; Go to the end of the current word
+      (jaword-backward 1))))
 
 ;;;###autoload
 (defun jaword-mark (&optional arg allow-extend)
