@@ -102,7 +102,7 @@ accuracy, but slower speed."
 ;;;###autoload
 (defun jaword-backward (arg)
   "Like backward-word, but handles Japanese words better."
-  (interactive "p")
+  (interactive "^p")
   (if (< arg 0)
       (jaword-forward (- arg))
     (let (segment)
@@ -121,7 +121,7 @@ accuracy, but slower speed."
 ;;;###autoload
 (defun jaword-forward (arg)
   "Like forward-word, but handle Japanese words better."
-  (interactive "p")
+  (interactive "^p")
   (if (< arg 0)
       (jaword-backward (- arg))
     (let (segment)
